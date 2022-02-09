@@ -1,9 +1,10 @@
-#define CLK 6
+#include <Adafruit_NeoPixel.h>
+
+#define CLK 19
 #define DT 18
-#define SW 19
-#define PIN_LED_RED 8
-#define PIN_LED_GREEN 9
-#define PIN_LED_BLUE 10
+#define SW 6
+#define LED_PIN 10
+#define LED_COUNT 1
 #define DELAY 500
 
 int counter = 0;
@@ -12,6 +13,7 @@ int lastStateCLK;
 int mod;
 String currentDir ="";
 
+Adafruit_NeoPixel pixels(LED_COUNT, LED_PIN, NEO_GRB + NEO_KHZ800);
 
 void setup() {
   
@@ -19,9 +21,9 @@ void setup() {
   pinMode(CLK,INPUT);
   pinMode(DT,INPUT);
   pinMode(SW, INPUT_PULLUP);
-  pinMode(PIN_LED_RED, OUTPUT);
-  pinMode(PIN_LED_BLUE, OUTPUT);
-  pinMode(PIN_LED_GREEN, OUTPUT);
+  
+  pixels.begin();
+  pixels.clear();
 
   Serial.begin(9600);
   lastStateCLK = digitalRead(CLK);
@@ -41,7 +43,7 @@ void loop() {
       CCW_LED();
     }
   }
-
+  
   else if (currentStateCLK == lastStateCLK  && currentStateCLK == 0){
     if (currentDir == "CW") {
       CW_LED();    
@@ -50,41 +52,28 @@ void loop() {
       CCW_LED();
     }
   }
-
-
-  lastStateCLK = currentStateCLK;
   
+  lastStateCLK = currentStateCLK;
   delay(1);
 }
 
 void CW_LED(){
-
-  rgb_color(255, 0, 0);
-  delay(DELAY);
-  rgb_color(0, 255, 0);
-  delay(DELAY);
-  rgb_color(0, 0, 255);
-  delay(DELAY);
-  rgb_color(255, 255, 255);
-  delay(DELAY);
-  
+  LED(255, 0, 0);
+  LED(0, 255, 0);
+  LED(0, 0, 255);
+  LED(255, 255, 255);
 }
 
 void CCW_LED(){
-  
-  rgb_color(255, 0, 0);
-  delay(DELAY);
-  rgb_color(255, 255, 255);
-  delay(DELAY);
-  rgb_color(0, 0, 255);
-  delay(DELAY);
-  rgb_color(0, 255, 0);
-  delay(DELAY);
-  
+  LED(255, 0, 0);
+  LED(255, 255, 255);
+  LED(0, 0, 255);
+  LED(0, 255, 0);
 }
 
-void rgb_color(int red, int green, int blue){
-  analogWrite(PIN_LED_RED, red);
-  analogWrite(PIN_LED_GREEN, green);
-  analogWrite(PIN_LED_BLUE, blue);
+void LED(int RED, int BLUE, int GREEN){
+  pixels.clear();
+  pixels.setPixelColor(0, pixels.Color(RED, BLUE, GREEN));
+  pixels.show();
+  delay(DELAY);
 }
